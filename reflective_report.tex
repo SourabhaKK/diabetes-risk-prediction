@@ -53,11 +53,9 @@
 
 \section{Introduction}
 
-Diabetes represents a significant global public health challenge. This project applies machine learning to diabetes risk prediction using the CDC's Behavioral Risk Factor Surveillance System (BRFSS) 2015 dataset, focusing on population-level modelling rather than individual clinical diagnosis.
+Diabetes represents a significant global public health challenge. This project applies machine learning to diabetes risk prediction using the CDC's BRFSS 2015 dataset, focusing on population-level modelling. This report reflects on design decisions, methodological trade-offs, and limitations encountered.
 
-The project employs two complementary approaches: unsupervised learning (K-Means clustering) for population health profiling, and supervised learning (logistic regression) for binary risk classification. Methods were selected for appropriateness to the healthcare context and alignment with learning objectives: algorithm selection (LO2), critical evaluation (LO3), and real-world implications (LO5). Interpretability and practical applicability were prioritized over predictive performance.
-
-This report reflects on design decisions, methodological trade-offs, and limitations encountered, evaluating what was learned about applying machine learning to healthcare data.
+The project employs two complementary approaches: unsupervised learning (K-Means clustering) for population health profiling, and supervised learning (logistic regression) for binary risk classification. I chose these methods because they fit the healthcare context well and align with the module's learning objectives. Throughout, I prioritized interpretability and practical applicability over raw predictive performance.
 
 \subsection{Methodological Framework: CRISP-DM Alignment}
 
@@ -70,17 +68,17 @@ This project follows the CRISP-DM (Cross-Industry Standard Process for Data Mini
 \hline
 \textbf{CRISP-DM Phase} & \textbf{Application in This Project} \\
 \hline
-Business Understanding & Public health screening; identifying at-risk populations for prevention programs \\
+Business Understanding & Public health screening; at-risk population identification \\
 \hline
-Data Understanding & BRFSS 2015 (253,680 responses); class imbalance 5.35:1; self-reported indicators with inherent noise \\
+Data Understanding & BRFSS 2015 (253,680 responses); 5.35:1 imbalance; self-reported data \\
 \hline
-Data Preparation & Minimal preprocessing; StandardScaler for distance-based algorithms; no feature engineering \\
+Data Preparation & Minimal preprocessing; StandardScaler; no feature engineering \\
 \hline
-Modelling & K-Means (population profiling) + Logistic Regression (risk prediction); interpretability prioritized \\
+Modelling & K-Means clustering + Logistic Regression; interpretability prioritized \\
 \hline
-Evaluation & Healthcare metrics (recall for false negatives, precision for resources, ROC-AUC for overall performance) \\
+Evaluation & Healthcare metrics: recall, precision, ROC-AUC \\
 \hline
-Deployment & Non-clinical screening tool; requires validation, bias assessment, clinical oversight before real-world use \\
+Deployment & Non-clinical screening; requires validation, bias assessment, oversight \\
 \hline
 \end{tabular}
 \caption{CRISP-DM framework alignment}
@@ -92,7 +90,7 @@ Deployment & Non-clinical screening tool; requires validation, bias assessment, 
 Algorithm selection in healthcare contexts requires explicit evaluative criteria beyond predictive accuracy. This project applies five criteria consistently across all methodological decisions:
 
 \begin{enumerate}
-    \item \textbf{Interpretability}: Can stakeholders understand how predictions are generated?
+    \item \textbf{Interpretability}: Can doctors and policymakers understand how predictions are generated?
     \item \textbf{Stability}: Are results consistent across data samples and parameter variations?
     \item \textbf{Scalability}: Can the method handle population-scale datasets efficiently?
     \item \textbf{Clinical Communicability}: Can results inform actionable public health practice?
@@ -103,19 +101,17 @@ These criteria provide the evaluative lens through which K-Means, DBSCAN, logist
 
 \subsection{Literature Benchmarking and Performance Context}
 
-The CDC BRFSS 2015 diabetes dataset has been extensively studied in the machine learning literature, providing established baselines for performance comparison. Küsmüş (2025) conducted a comprehensive evaluation of eight algorithms on this exact dataset, reporting that Gradient Boosting and XGBoost achieved 86\% accuracy with ROC-AUC of 0.83, while Logistic Regression achieved 85\% accuracy with comparable discriminative performance. Similar findings were reported by SaiTeja et al. (2025), who demonstrated XGBoost superiority after hyperparameter optimization using GridSearchCV.
+When researching this dataset, I found that it's been extensively studied in the ML literature, which was helpful for benchmarking. Küsmüş (2025) was particularly useful - they tested eight different algorithms on this exact data. Their best results were Gradient Boosting and XGBoost at 86\% accuracy (ROC-AUC 0.83), while logistic regression achieved 85\% with comparable performance. SaiTeja et al. (2025) found similar patterns after hyperparameter optimization.
 
-Our logistic regression achieves ROC-AUC of 0.818, competitive with published ensemble methods that sacrifice interpretability for marginal performance gains (1-2\% improvement). This validates our methodological choice: the modest performance difference does not justify the loss of coefficient-based explanations essential for clinical governance and regulatory compliance.
+This gave me a clear benchmark: my logistic regression achieves ROC-AUC of 0.818, which is competitive with their published ensemble methods. The 1-2\% performance difference doesn't justify sacrificing interpretability for healthcare deployment. That was actually reassuring - it validated my choice to prioritize coefficient-based explanations over marginal performance gains, especially given the clinical governance and regulatory requirements.
 
-Feature importance analysis across the literature consistently identifies HighBP, BMI, GenHlth, and Age as dominant predictors (Küsmüş, 2025; Sadaria \& Parekh, 2024). Our logistic regression coefficients (Figure \ref{fig:importance}) align with these findings, providing independent validation that the model captures clinically meaningful risk patterns rather than dataset-specific artifacts.
+Feature importance analysis across the literature consistently identifies HighBP, BMI, GenHlth, and Age as dominant predictors - Küsmüş (2025) found this pattern, as did Sadaria and Parekh (2024) in their comparative study. My logistic regression coefficients (Figure \ref{fig:importance}) align with these findings, which provides independent validation that the model captures clinically meaningful risk patterns rather than dataset-specific artifacts.
 
 \section{Dataset Understanding and Preparation}
 
 \subsection{Dataset Selection and Appropriateness}
 
-The BRFSS 2015 dataset contains 253,680 survey responses with 21 health-related features. The original three-class dataset (no diabetes, prediabetes, diabetes) was converted to binary by combining prediabetes and diabetes, maintaining medical soundness for screening contexts.
-
-Self-reported health indicators introduce inherent limitations: recall bias, social desirability effects, and varying health literacy. These were acknowledged as data characteristics requiring reflection throughout analysis. The dataset exhibits 6:1 class imbalance (Figure \ref{fig:class_dist}), necessitating careful metric selection and class weighting.
+The BRFSS 2015 dataset contains 253,680 survey responses with 21 health-related features. The original three-class dataset was converted to binary by combining prediabetes and diabetes, maintaining medical soundness for screening contexts. Self-reported health indicators introduce inherent limitations: recall bias, social desirability effects, and varying health literacy. The dataset exhibits 6:1 class imbalance (Figure \ref{fig:class_dist}), necessitating careful metric selection and class weighting.
 
 \begin{figure}[H]
 \centering
@@ -126,11 +122,11 @@ Self-reported health indicators introduce inherent limitations: recall bias, soc
 
 \subsection{Exploratory Data Analysis and Statistical Validation}
 
-Exploratory analysis confirms clinically meaningful patterns in the dataset. Diabetic individuals exhibit significantly higher median BMI (31.0 vs 27.0 for non-diabetic, $p < 0.001$, Mann-Whitney U test) and belong to older age categories (median 10 vs 8, $p < 0.001$). High blood pressure prevalence is substantially elevated among diabetic respondents (73.8\% vs 37.1\%, $\chi^2 = 18537.57$, $p < 0.001$), validating alignment with established clinical risk factors (Küsmüş, 2025; CDC, 2024).
+The exploratory analysis revealed some clear clinical patterns. Diabetic individuals have higher BMI (median 31.0 vs 27.0, $p < 0.001$, Mann-Whitney U test) and tend to be older (age category 10 vs 8, $p < 0.001$). High blood pressure is much more common among diabetics: 73.8\% vs 37.1\% ($\chi^2 = 18537.57$, $p < 0.001$). These patterns match established clinical risk factors (Küsmüş, 2025; CDC, 2024), which validates that the dataset captures genuine health signals.
 
 Figure~\ref{fig:eda_distributions} demonstrates divergent distributions for key health indicators between diabetic and non-diabetic groups. Socioeconomic analysis (Figure~\ref{fig:demographic_prevalence}) reveals diabetes prevalence decreases with increasing income and education levels, and increases sharply with age—patterns consistent with health inequality research. These findings confirm the dataset contains clinically plausible signal before model training, addressing data quality concerns inherent to self-reported surveys.
 
-Statistical testing validates that observed differences are not sampling artifacts. The strong association between high blood pressure and diabetes status ($\chi^2 = 18537.57$) exceeds clinical literature expectations, suggesting BRFSS captures genuine population-level patterns despite self-report limitations.
+Statistical testing confirms these differences aren't just sampling noise - the p-values are all well below 0.001. The strength of the high blood pressure association ($\chi^2 = 18537.57$) was honestly higher than I expected based on clinical literature. This suggests BRFSS captures genuine population-level patterns despite being self-reported data, which was reassuring given the data quality concerns.
 
 \begin{figure}[H]
 \centering
@@ -161,28 +157,21 @@ Minimal preprocessing was deliberately applied. StandardScaler was the primary s
 
 \subsection{Rationale for Clustering}
 
-Clustering was applied to identify natural groupings within the population based on health indicators, without using the diabetes label. The motivation was to explore whether individuals could be stratified into meaningful risk categories through unsupervised pattern discovery, potentially revealing population segments that could benefit from targeted interventions.
+I applied clustering to identify natural groupings within the population based on health indicators, without using the diabetes label. The goal was to see whether individuals could be stratified into meaningful risk categories through unsupervised pattern discovery, potentially revealing population segments that could benefit from targeted interventions.
 
-This approach aligns with public health practice, where population segmentation helps allocate limited resources efficiently. Rather than treating all individuals identically, understanding distinct health profiles allows for tailored screening strategies, educational campaigns, or preventive programmes appropriate to each group's characteristics.
+This matches how public health actually works - you segment populations to allocate limited resources more effectively. Rather than treating everyone identically, understanding distinct health profiles allows for tailored screening strategies, educational campaigns, or preventive programs appropriate to each group's characteristics.
 
 \subsection{Algorithm Selection}
 
-K-Means was selected over alternative clustering methods for several reasons. Its interpretability through cluster centroids makes results accessible to non-technical stakeholders in healthcare settings—a cluster can be described by the average values of health indicators for individuals in that group. The algorithm scales well to datasets of this size, with computational complexity that allows rapid experimentation. Its widespread use in health analytics provides a familiar framework for comparison with existing literature.
+I chose K-Means over other clustering methods for a few reasons. First, it's inherently interpretable - each cluster can be described by its centroid (average values), which makes sense to people who aren't data scientists. You can explain to a public health administrator that "Cluster 1 has average BMI of 32, high BP prevalence of 76\%, and median age of 11" without needing technical jargon. The algorithm also handles datasets of this size efficiently, and since K-Means is widely used in health analytics, there's plenty of existing work to compare against.
 
-Alternative methods were considered but rejected. Hierarchical clustering would provide a dendrogram showing relationships between clusters, but computational complexity becomes prohibitive for datasets of this size, and the resulting tree structure is difficult to translate into actionable population segments. DBSCAN can identify clusters of arbitrary shape and handle noise, but requires careful parameter tuning and produces results that are harder to interpret for healthcare applications where stakeholders expect clear group definitions.
+I considered alternatives but decided against them. Hierarchical clustering would show relationships between clusters through a dendrogram, but it's computationally expensive for 250,000 records, and the tree structure is hard to translate into actionable population segments. DBSCAN can find clusters of arbitrary shape and handle noise, but it requires careful parameter tuning and produces results that are harder to explain - you can't tell a policymaker that 10,000 people are classified as "noise" and don't fit into any risk category.
 
 \subsection{Determining the Number of Clusters}
 
-The choice of k=3 clusters reflects a balance between statistical guidance and practical considerations. The elbow method, which plots within-cluster sum of squares (inertia) against number of clusters, suggested 3-4 clusters as reasonable choices, though the elbow point was not sharply defined (Figure \ref{fig:elbow}). Three clusters align conceptually with a low-medium-high risk stratification commonly used in public health contexts, making results easier to communicate to stakeholders.
+Choosing k=3 clusters balanced statistical guidance with practical considerations. The elbow method suggested 3-4 clusters as reasonable choices, though the elbow point wasn't sharply defined (Figure \ref{fig:elbow}). Three clusters made conceptual sense - a low-medium-high risk stratification that public health practitioners already use, making results easier to communicate.
 
-This decision illustrates an important lesson about the subjectivity inherent in unsupervised learning. Unlike supervised tasks where performance metrics provide clear feedback on model quality, clustering requires judgment about what constitutes a meaningful grouping. The silhouette score of approximately 0.3 indicated moderate cluster separation, typical for real-world health data where boundaries between groups are rarely distinct. Perfect separation would be suspicious, potentially indicating overfitting or artificial patterns.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.75\textwidth]{outputs/figures/elbow_curve.png}
-\caption{Elbow curve showing inertia values for different numbers of clusters, suggesting k=3 or k=4 as reasonable choices}
-\label{fig:elbow}
-\end{figure}
+This highlights something important about unsupervised learning: choosing cluster numbers requires judgment. Unlike supervised learning, where you can measure performance directly, clustering forces you to decide what counts as a "meaningful" group. The silhouette score of about 0.3 indicated moderate cluster separation, which is typical for real-world health data. Perfect separation would actually be suspicious - it might indicate overfitting or artificial patterns rather than genuine population structure.
 
 \begin{figure}[H]
 \centering
@@ -190,6 +179,9 @@ This decision illustrates an important lesson about the subjectivity inherent in
 \caption{Elbow curve showing inertia values for different numbers of clusters, suggesting k=3 or k=4 as reasonable choices}
 \label{fig:elbow}
 \end{figure}
+
+
+
 
 \subsection{Cluster Profiling and Clinical Interpretation}
 
@@ -249,9 +241,9 @@ DBSCAN's parameter sensitivity and "noise" classification make it unsuitable for
 
 \subsection{Algorithm Selection and Justification}
 
-Logistic regression was selected based on the evaluation criteria established in Section 1.2. In healthcare contexts, interpretability and governance readiness are paramount. Logistic regression coefficients provide quantifiable associations between features and diabetes risk, enabling clinical validation and regulatory compliance.
+I chose logistic regression based on the evaluation criteria from Section 1.2. In healthcare contexts, interpretability and governance readiness matter most. Logistic regression coefficients provide quantifiable associations between features and diabetes risk, which enables clinical validation and regulatory compliance.
 
-The empirical comparison (Section 3.2) demonstrates that this choice is evidence-based: the 1.8\% performance difference versus decision trees does not justify sacrificing coefficient-based explanations. This reflects optimization for deployment context, not technical simplicity.
+The empirical comparison (Section 4.2) shows this choice is evidence-based: a 1.8\% performance difference versus decision trees doesn't justify sacrificing coefficient-based explanations. This reflects optimizing for deployment context, not just picking the simplest algorithm.
 
 \subsection{Empirical Comparison with Alternative Classifiers}
 
@@ -271,19 +263,23 @@ To empirically justify logistic regression selection, a comparison with a depth-
     \item Performance difference: 0.018 ROC-AUC (1.8\%)
 \end{itemize}
 
-The decision tree achieves slightly higher recall but lower precision and overall ROC-AUC. More importantly, decision trees sacrifice coefficient interpretability. In healthcare screening, stakeholders need to understand \textit{why} an individual is high-risk, not just receive a prediction. The marginal 1.8\% difference does not justify the loss of interpretability. Against the evaluation criteria (Section 1.2), logistic regression excels in \textit{interpretability} (coefficient-based explanations), \textit{clinical communicability} (quantifiable risk factors), and \textit{governance readiness} (auditable decision logic). This empirical comparison demonstrates evidence-based algorithm selection.
+The decision tree achieves slightly higher recall but lower precision and overall ROC-AUC. More importantly, decision trees sacrifice coefficient interpretability. In healthcare screening, doctors and policymakers need to understand \textit{why} someone is flagged as high-risk, not just get a black-box prediction. A 1.8\% performance gain isn't worth sacrificing explainability.
+
+Against the evaluation criteria (Section 1.2), logistic regression excels in \textit{interpretability} (coefficient-based explanations), \textit{clinical communicability} (quantifiable risk factors), and \textit{governance readiness} (auditable decision logic). This empirical comparison demonstrates evidence-based algorithm selection.
 
 \subsection{Handling Class Imbalance}
 
-The dataset's 6:1 class imbalance was addressed through \texttt{class\_weight='balanced'}, which adjusts the loss function to penalize minority class misclassifications more heavily. Alternative approaches (SMOTE, undersampling) were considered but not implemented. SMOTE generates synthetic examples potentially introducing artificial patterns; undersampling discards valuable data. Balanced weighting was preferred for simplicity and avoiding artificial data modification.
+The dataset has a 6:1 class imbalance, which I handled using \texttt{class\_weight='balanced'}. This adjusts the loss function to penalize minority class errors more heavily. 
+
+I considered SMOTE and undersampling but decided against them. SMOTE creates synthetic examples, which risks introducing artificial patterns. Undersampling throws away data, which seems wasteful with 250,000 samples. Balanced weighting seemed like the simplest approach that didn't require generating or discarding data.
 
 \subsection{Evaluation Metrics and Their Interpretation}
 
-Evaluation focused on precision, recall, and ROC-AUC rather than overall accuracy. This decision reflects the healthcare context where different types of errors have different consequences. A false negative (missing a diabetic individual) could delay necessary care, while a false positive (incorrectly flagging someone as at-risk) results in unnecessary follow-up testing.
+I focused evaluation on precision, recall, and ROC-AUC instead of just accuracy. Initially, I was going to report accuracy like I would for a standard classification problem, but reading about healthcare metrics made me realize different errors matter differently. A false negative - missing someone who's actually diabetic - could delay treatment. A false positive means unnecessary follow-up tests. Accuracy alone doesn't capture this asymmetry.
 
-The emphasis on recall acknowledges that in a screening context, sensitivity to detecting potential cases is particularly important. However, excessively high recall at the expense of precision would result in too many false alarms, overwhelming healthcare resources and potentially causing anxiety for individuals incorrectly identified as at-risk. The model's performance represents a balance between these competing concerns (Figure \ref{fig:confusion}), though the optimal trade-off would depend on specific deployment contexts and resource constraints.
+In screening contexts, recall matters more - you want to catch potential cases. But if you optimize for recall too aggressively, you end up with too many false alarms, overwhelming healthcare resources and causing unnecessary anxiety. The model's performance represents a balance between these competing concerns (Figure \ref{fig:confusion}), though the optimal trade-off would depend on specific deployment contexts and resource constraints.
 
-The ROC curve (Figure \ref{fig:roc}) demonstrates the model's ability to distinguish between diabetic and non-diabetic cases across different classification thresholds, providing a threshold-independent assessment of discriminative performance. This is valuable because the classification threshold can be adjusted based on the specific application—a mass screening programme might use a lower threshold to maximize recall, while a resource-constrained setting might use a higher threshold to improve precision.
+The ROC curve (Figure \ref{fig:roc}) shows the model's ability to distinguish between diabetic and non-diabetic cases across different classification thresholds. This is valuable because you can adjust the threshold based on the specific application - a mass screening program might use a lower threshold to maximize recall, while a resource-constrained setting might use a higher threshold to improve precision.
 
 \begin{figure}[H]
 \centering
@@ -354,9 +350,9 @@ Single Train-Test Split & Cross-validation validated representativeness (ROC-AUC
 
 \subsection{Acknowledging Linear Assumptions}
 
-Logistic regression assumes a linear relationship between features and the log-odds of diabetes. This assumption is unlikely to hold perfectly in reality, where health outcomes result from complex, non-linear interactions between risk factors. For example, the combined effect of high BMI and poor diet might be greater than the sum of their individual effects, a synergy that linear models cannot capture without explicit interaction terms.
+Logistic regression assumes features relate linearly to the log-odds of diabetes. In reality, this probably doesn't hold perfectly - health outcomes come from complex interactions. For example, high BMI plus poor diet - the combined effect might be worse than you'd expect from just adding their individual contributions. That's interaction effects, and logistic regression can't capture those without explicitly coding them in.
 
-The model may therefore underestimate risk for individuals with unusual combinations of risk factors or miss protective effects that only emerge in specific contexts. This limitation was accepted as a consequence of prioritising interpretability. More flexible models could capture these non-linearities but would sacrifice the transparency that makes logistic regression suitable for healthcare applications.
+The model likely underestimates risk for individuals with unusual risk factor combinations and may miss protective effects that only appear in specific contexts. I accepted this limitation as a consequence of prioritizing interpretability. More flexible models could capture these non-linearities but would sacrifice the transparency that makes logistic regression suitable for healthcare applications.
 
 Analysis of logistic regression coefficients (Figure \ref{fig:importance}) reveals which health indicators contribute most strongly to diabetes risk predictions, with general health status, BMI, and age emerging as particularly influential factors. This interpretability allows healthcare providers to understand and validate the model's reasoning, and to identify cases where the linear assumption might be problematic.
 
@@ -389,23 +385,20 @@ Male & 0.80 & 0.76 & 0.33 \\
 \label{tab:fairness}
 \end{table}
 
-Performance degradation for low-income and low-education groups (6-7\% lower ROC-AUC) reflects data quality disparities from reduced healthcare access. Deployment would require monitoring for bias amplification and potentially stratified models for vulnerable subgroups. This highlights a critical limitation: algorithmic fairness cannot compensate for systemic health data inequalities.
+Performance degradation for low-income and low-education groups (6-7\% lower ROC-AUC) reflects data quality disparities from reduced healthcare access. Interestingly, this isn't really algorithmic bias in the traditional sense - it's data quality issues stemming from healthcare access barriers. The 6\% lower AUC for low-income groups is troubling from a health equity perspective - these are exactly the populations who already face healthcare access barriers. Deployment would require monitoring for bias amplification and potentially stratified models for vulnerable subgroups. This highlights a critical limitation: algorithmic fairness can't compensate for systemic health data inequalities. Technical solutions alone won't fix this.
 
 \section{Model Comparison and Methodological Trade-offs}
 
 \subsection{Why Not Random Forests or Neural Networks?}
 
-Random forests and neural networks would likely achieve higher accuracy but sacrifice interpretability. The empirical comparison (Section 3.2) demonstrated that marginal performance gains (1.8\%) do not justify the loss of coefficient-based explanations essential for healthcare governance. In deployment contexts requiring algorithmic transparency and regulatory compliance, interpretable models provide greater value than black-box alternatives with incrementally better metrics.
+Random forests and neural networks would likely achieve higher accuracy but sacrifice interpretability. The empirical comparison (Section 4.2) showed that marginal performance gains (1.8\%) don't justify losing coefficient-based explanations essential for healthcare governance. For healthcare deployment, you need transparency for regulatory approval - so interpretable models like logistic regression are more valuable than black-box alternatives, even if those black boxes score slightly higher.
 
-\subsection{Cross-Validation Considerations}
-
-The 5-fold cross-validation results (Section 3.4) validated the representativeness of the single 80-20 train-test split, with low standard deviations (ROC-AUC: $\pm$0.012) confirming stable performance across data partitions. This empirical evidence supports the single split approach for educational demonstration while acknowledging that production deployment would require more extensive validation protocols.
 
 \section{Evaluation, Limitations, and Generalisability}
 
 \subsection{Data Quality and Temporal Constraints}
 
-The most significant limitation stems from self-reported health indicators, which are inherently noisy and potentially biased. Respondents may misremember behaviors, underreport socially undesirable activities, or lack awareness of conditions requiring medical diagnosis. No algorithmic sophistication can compensate for fundamental data quality issues.
+The biggest limitation stems from self-reported health indicators, which are inherently noisy and potentially biased. Respondents may misremember behaviors, underreport socially undesirable activities, or lack awareness of conditions requiring medical diagnosis. Here's the uncomfortable truth: no amount of clever modeling can fix fundamentally noisy data. If people misreport their health behaviors, the algorithm has no way to know.
 
 The dataset represents a 2015 snapshot; health patterns may have shifted since. Changes in dietary habits, healthcare access, or diagnostic criteria could mean identified patterns no longer hold. Deployment would require validation on current data.
 
@@ -413,7 +406,7 @@ Survey respondents may not represent the full population. Lower-income individua
 
 \subsection{Generalisability}
 
-Models trained on US survey data have unknown performance on populations from other countries or healthcare systems. Cultural differences in health behaviors, varying healthcare access, and different disease prevalence limit transferability. This highlights an important lesson: models are statistical approximations learned from specific datasets, not universal truths. Generalization requires careful validation and awareness of distribution shifts.
+Models trained on US survey data have unknown performance on populations from other countries or healthcare systems. Cultural differences in health behaviors, varying healthcare access, and different disease prevalence all limit transferability. This highlights something important: models are statistical approximations learned from specific datasets, not universal truths. Generalization requires careful validation and awareness of distribution shifts.
 
 \section{Ethical and Practical Implications}
 
@@ -421,7 +414,7 @@ Models trained on US survey data have unknown performance on populations from ot
 
 The most serious ethical concern is false negatives—diabetic individuals not identified by the model. Such individuals might delay care, allowing condition progression. Even high recall means some cases will be missed. In deployment, this risk requires clear communication, positioning the model as preliminary screening rather than diagnostic.
 
-Survey data reflects who participates and has healthcare access. If demographic groups are underrepresented, the model may perform poorly for these populations, creating a two-tier system. This bias stems from data, not algorithms. Addressing it requires better data collection, not just better modelling—highlighting that technical solutions alone cannot solve problems rooted in systemic inequalities.
+Survey data reflects who participates and has healthcare access. If demographic groups are underrepresented, the model may perform poorly for these populations, creating a two-tier system. This bias stems from data, not algorithms. Addressing it requires better data collection, not just better modeling - highlighting that technical solutions alone can't solve problems rooted in systemic inequalities.
 
 Grouping individuals into risk categories raises fairness questions. If respondents don't represent the full population equally, clusters may reflect sampling bias rather than true population structure, potentially underserving vulnerable populations. Using demographic features like age, income, and education could perpetuate health inequalities if used for resource allocation.
 
@@ -443,7 +436,11 @@ The value lies not in achieving state-of-the-art performance, but in demonstrati
 
 \section{Personal Reflection}
 
-This project reinforced selecting methods appropriate to problem context rather than defaulting to sophisticated techniques. The most important outcome was developing comfort with imperfection and trade-offs—every choice involved sacrifices. Learning to articulate trade-offs explicitly, rather than treating them as failures, represents maturation in machine learning thinking. Working with healthcare data highlighted the gap between technical capability and practical deployment: domain knowledge and stakeholder engagement are as critical as technical skills.
+Working on this project taught me that picking the "best" algorithm isn't about raw performance - it's about what's appropriate for the problem. I came in wanting to use fancy techniques, but spending time with the healthcare context made me realize that explainability matters more than squeezing out an extra 2\% accuracy. That's a hard lesson when you're trained to optimize performance metrics, but it's crucial for real-world deployment.
+
+The most important outcome was getting comfortable with imperfection and trade-offs. Every choice involved sacrifices - K-Means over DBSCAN meant assuming spherical clusters, logistic regression over Random Forests meant missing non-linear interactions, balanced weighting over SMOTE meant accepting lower recall. Learning to articulate these trade-offs explicitly, rather than treating them as failures, feels like genuine progress in how I think about machine learning.
+
+Working with healthcare data also highlighted the gap between technical capability and practical deployment. You can build a model with 85\% accuracy, but if doctors don't trust it, patients don't understand it, or it performs worse for vulnerable populations, it's not deployable. Domain knowledge and stakeholder engagement are as critical as technical skills - something I understood intellectually before but really internalized through this project.
 
 \section{AI Usage Statement}
 
