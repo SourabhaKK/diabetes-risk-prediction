@@ -1,5 +1,5 @@
 """
-FAIDM Diabetes Project
+Diabetes Risk Prediction
 
 This package contains modules for diabetes risk prediction and population health profiling.
 """
