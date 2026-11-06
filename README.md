@@ -5,10 +5,6 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**University of Warwick | WMG | WM9QG-15**  
-**Fundamentals of Artificial Intelligence and Data Mining**  
-**Academic Year 2025-26 | Grade: 80/100 (Distinction)**
-
 ---
 
 ## 📋 Table of Contents
@@ -22,7 +18,6 @@
 - [Installation & Usage](#-installation--usage)
 - [Key Insights](#-key-insights--learnings)
 - [Limitations & Future Work](#-limitations--future-work)
-- [Academic Context](#-academic-context)
 - [References](#-references)
 - [Author](#-author)
 
@@ -46,9 +41,9 @@ Address the public health challenge of diabetes screening and risk stratificatio
 1. **Unsupervised Learning**: K-Means clustering (k=3) for population health profiling
 2. **Supervised Learning**: Logistic Regression for transparent risk prediction
 
-### Key Achievement
+### Highlights
 
-**Distinction-grade work (80/100)** demonstrating:
+The project demonstrates:
 - Literature-grounded algorithm selection
 - Statistical validation of exploratory analysis
 - Actionable cluster interpretation for public health
@@ -228,7 +223,7 @@ All visualizations available in `outputs/figures/`
 ## 📁 Project Structure
 
 ```
-FAIDM-WM9QG-25-26--Solo-Assignment-/
+diabetes-risk-prediction/
 │
 ├── data/                           # Dataset directory
 │   └── CDC Diabetes Dataset.csv   # CDC BRFSS 2015 diabetes dataset
@@ -275,7 +270,6 @@ FAIDM-WM9QG-25-26--Solo-Assignment-/
 ├── LICENSE                        # MIT License
 ├── PROJECT_STRUCTURE.md           # Detailed project structure documentation
 ├── README.md                      # This file
-├── reflective_report.tex          # LaTeX technical report (Distinction-level)
 └── requirements.txt               # Python dependencies
 ```
 
@@ -459,35 +453,6 @@ See `requirements.txt` for complete list.
 
 ---
 
-## 🎓 Academic Context
-
-### Assessment Details
-
-**Module**: WM9QG-15 - Fundamentals of Artificial Intelligence and Data Mining  
-**Institution**: University of Warwick, Warwick Manufacturing Group (WMG)  
-**Academic Year**: 2025-26  
-**Grade**: **80/100 (Distinction)**  
-**Assessment Type**: Individual Coursework Project
-
-### Learning Outcomes Demonstrated
-
-**LO2: Algorithm Selection and Justification**
-- Evidence-based selection of K-Means and Logistic Regression
-- Empirical comparison with alternatives (DBSCAN, Decision Tree)
-- Literature benchmarking against published results
-
-**LO3: Critical Evaluation of Methods**
-- Statistical validation of exploratory analysis
-- Cross-validation for stability testing
-- Honest acknowledgment of limitations and assumptions
-
-**LO5: Real-World Implications and Ethical Considerations**
-- Fairness analysis across demographic subgroups
-- Discussion of deployment risks (false negatives, bias amplification)
-- Data quality vs algorithmic bias distinction
-  
----
-
 ## 📚 References
 
 ### Key Publications
@@ -514,12 +479,7 @@ See `requirements.txt` for complete list.
 
 ## 👤 Author
 
-**University of Warwick Student**  
-Warwick Manufacturing Group (WMG)  
-MSc Applied Artificial Intelligence
-
-**Academic Year**: 2025-26  
-**Module**: WM9QG-15 - Fundamentals of AI and Data Mining  
+**Sourabha K Kallapur**
 
 ---
 
@@ -527,13 +487,11 @@ MSc Applied Artificial Intelligence
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-**Academic Use**: This work is submitted as part of academic assessment. Please cite appropriately if referencing this work.
 
 ---
 
 ## 🙏 Acknowledgments
 
-- **University of Warwick WMG Faculty** for module instruction and guidance
 - **CDC** for maintaining the BRFSS dataset
 - **UCI Machine Learning Repository** for dataset hosting
 - **Scikit-learn Community** for excellent ML library and documentation

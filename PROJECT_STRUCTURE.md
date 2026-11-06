@@ -1,7 +1,7 @@
 # Project Structure
 
 ```
-FAIDM-WM9QG-25-26--Solo-Assignment-/
+diabetes-risk-prediction/
 │
 ├── data/                           # Dataset directory
 │   └── CDC Diabetes Dataset.csv   # CDC BRFSS 2015 diabetes dataset
@@ -47,7 +47,6 @@ FAIDM-WM9QG-25-26--Solo-Assignment-/
 ├── .gitignore                     # Git ignore rules
 ├── LICENSE                        # MIT License
 ├── README.md                      # Project documentation
-├── reflective_report.tex          # LaTeX technical report
 └── requirements.txt               # Python dependencies
 ```
 
@@ -61,7 +60,7 @@ Jupyter notebooks used for exploratory analysis and model development. These doc
 
 ### `outputs/`
 All generated outputs from the analysis:
-- **figures/**: 13 PNG visualizations referenced in the LaTeX report
+- **figures/**: 13 PNG visualizations
 - **tables/**: Generated statistical tables
 
 ### `scripts/`
@@ -79,7 +78,6 @@ Core Python modules implementing the machine learning pipeline:
 
 ## Key Files
 
-- **reflective_report.tex**: Main LaTeX document (Master's level technical report)
 - **requirements.txt**: Python package dependencies
 - **README.md**: Comprehensive project documentation
 
@@ -96,14 +94,7 @@ Core Python modules implementing the machine learning pipeline:
    python scripts/generate_statistics.py
    ```
 
-3. **Compile LaTeX report:**
-   ```bash
-   pdflatex reflective_report.tex
-   pdflatex reflective_report.tex  # Run twice for references
-   ```
-
 ## Notes
 
-- All figures in `outputs/figures/` are referenced in the LaTeX report
 - The project follows a clean separation: `src/` for core modules, `scripts/` for analysis utilities, `notebooks/` for development
 - Dataset is loaded locally from `data/` directory
