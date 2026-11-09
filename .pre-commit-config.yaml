@@ -13,3 +13,9 @@ repos:
         language: system
         pass_filenames: false
         types: [python]
+
+  # Keeps saved notebook outputs (results, data previews) out of git
+  - repo: https://github.com/kynan/nbstripout
+    rev: 34071b78c181af3bf5af955c1426466e096fc3db  # 0.9.1
+    hooks:
+      - id: nbstripout
